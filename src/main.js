@@ -4,16 +4,12 @@
 const ChessBoard = require('chessboardjs');
 const { Chess } = require('chess.js');
 
+let board = null;
 const game = new Chess();
 const whiteSquareGrey = '#a9a9a9';
 const blackSquareGrey = '#696969';
 
-const onDragStart = (src, p, pos, ori) => {
-  console.log(game.moves({ square: src }));
-  console.log(`piece: ${p}`);
-  console.log(pos);
-  console.log(`orientation: ${ori}`);
-};
+const onDragStart = (src, p, pos, ori) => {};
 
 const greySquare = (sqr) => {
   const $sqr = $(`#board .square-${sqr}`);
@@ -61,6 +57,10 @@ const onDrop = (src, target) => {
   if (move === null) return 'snapback';
 };
 
+const onSnapEnd = () => {
+  board.position(game.fen());
+};
+
 const boardConfig = {
   position: 'start',
   pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
@@ -69,6 +69,7 @@ const boardConfig = {
   onMouseoverSquare,
   onMouseoutSquare,
   onDrop,
+  onSnapEnd,
 };
 
-const board = ChessBoard('board', boardConfig);
+board = ChessBoard('board', boardConfig);
