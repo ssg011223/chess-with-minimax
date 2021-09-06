@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-else-return */
 /* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
@@ -9,6 +11,7 @@ let board = null;
 const game = new Chess();
 const whiteSquareGrey = '#a9a9a9';
 const blackSquareGrey = '#696969';
+let counter = 0;
 
 // AI
 const evalPiece = (p) => {
@@ -52,7 +55,8 @@ const evalBoard = (b) => {
   return score;
 };
 
-const minimax = (depth, gameToPass, isMaximizingPlayer) => {
+const minimax = (depth, gameToPass, alpha, beta, isMaximizingPlayer) => {
+  counter++;
   if (depth === 0) {
     return evalBoard(gameToPass.board());
   }
@@ -63,16 +67,26 @@ const minimax = (depth, gameToPass, isMaximizingPlayer) => {
     let score = -Infinity;
     for (let i = 0; i < possibleMoves.length; i++) {
       gameToPass.move(possibleMoves[i]);
-      score = Math.max(score, minimax(depth - 1, gameToPass, false));
+      score = Math.max(
+        score,
+        minimax(depth - 1, gameToPass, alpha, beta, false)
+      );
       gameToPass.undo();
+      alpha = Math.max(score, alpha);
+      if (beta <= score) return score;
     }
     return score;
   } else {
     let score = Infinity;
     for (let i = 0; i < possibleMoves.length; i++) {
       gameToPass.move(possibleMoves[i]);
-      score = Math.min(score, minimax(depth - 1, gameToPass, true));
+      score = Math.min(
+        score,
+        minimax(depth - 1, gameToPass, alpha, beta, true)
+      );
       gameToPass.undo();
+      beta = Math.min(score, beta);
+      if (alpha >= score) return score;
     }
     return score;
   }
@@ -104,6 +118,8 @@ const getBestMove = (depth) => {
 const makeBestMove = (depth) => {
   const bestMove = getBestMove(depth);
   game.move(bestMove);
+  console.log(counter);
+  counter = 0;
 };
 
 // Base game logic
