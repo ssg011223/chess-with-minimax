@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 /* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-plusplus */
@@ -9,6 +10,103 @@ const game = new Chess();
 const whiteSquareGrey = '#a9a9a9';
 const blackSquareGrey = '#696969';
 
+// AI
+const evalPiece = (p) => {
+  if (p === null) return 0;
+
+  let pieceValue = 0;
+
+  switch (p.type) {
+    case 'p':
+      pieceValue = 100;
+      break;
+    case 'r':
+      pieceValue = 500;
+      break;
+    case 'n':
+      pieceValue = 320;
+      break;
+    case 'b':
+      pieceValue = 330;
+      break;
+    case 'q':
+      pieceValue = 900;
+      break;
+    case 'k':
+      pieceValue = 20000;
+      break;
+    default:
+      throw `Unknown piece type: ${p.type}`;
+  }
+
+  return p.color === 'w' ? pieceValue : -pieceValue;
+};
+
+const evalBoard = (b) => {
+  let score = 0;
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      score += evalPiece(b[i][j]);
+    }
+  }
+  return score;
+};
+
+const minimax = (depth, gameToPass, isMaximizingPlayer) => {
+  if (depth === 0) {
+    return evalBoard(gameToPass.board());
+  }
+
+  const possibleMoves = gameToPass.moves();
+
+  if (isMaximizingPlayer) {
+    let score = -Infinity;
+    for (let i = 0; i < possibleMoves.length; i++) {
+      gameToPass.move(possibleMoves[i]);
+      score = Math.max(score, minimax(depth - 1, gameToPass, false));
+      gameToPass.undo();
+    }
+    return score;
+  } else {
+    let score = Infinity;
+    for (let i = 0; i < possibleMoves.length; i++) {
+      gameToPass.move(possibleMoves[i]);
+      score = Math.min(score, minimax(depth - 1, gameToPass, true));
+      gameToPass.undo();
+    }
+    return score;
+  }
+};
+
+const getBestMove = (depth) => {
+  const tempGame = Chess(game.fen());
+
+  let bestScore = Infinity;
+  let bestMove = null;
+  const possibleMoves = tempGame.moves();
+
+  for (let i = 0; i < possibleMoves.length; i++) {
+    const move = tempGame.move(possibleMoves[i]);
+    const score = minimax(depth - 1, tempGame, true);
+    tempGame.undo();
+    if (score < bestScore) {
+      bestScore = score;
+      bestMove = {
+        from: move.from,
+        to: move.to,
+      };
+    }
+  }
+
+  return bestMove;
+};
+
+const makeBestMove = (depth) => {
+  const bestMove = getBestMove(depth);
+  game.move(bestMove);
+};
+
+// Base game logic
 const onDragStart = (src, p, pos, ori) => {
   if (game.game_over()) return false;
 
@@ -64,6 +162,7 @@ const onDrop = (src, target) => {
   });
 
   if (move === null) return 'snapback';
+  makeBestMove(3);
 };
 
 const onSnapEnd = () => {
