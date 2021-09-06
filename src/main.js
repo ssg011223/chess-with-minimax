@@ -9,7 +9,16 @@ const game = new Chess();
 const whiteSquareGrey = '#a9a9a9';
 const blackSquareGrey = '#696969';
 
-const onDragStart = (src, p, pos, ori) => {};
+const onDragStart = (src, p, pos, ori) => {
+  if (game.game_over()) return false;
+
+  if (
+    (game.turn() === 'w' && p.search(/^b/) !== -1) ||
+    (game.turn() === 'b' && p.search(/^w/) !== -1)
+  ) {
+    return false;
+  }
+};
 
 const greySquare = (sqr) => {
   const $sqr = $(`#board .square-${sqr}`);
