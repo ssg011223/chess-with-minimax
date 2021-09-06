@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-plusplus */
 const ChessBoard = require('chessboardjs');
@@ -48,6 +49,18 @@ const onMouseoutSquare = (sqr, p) => {
   removeGreySquares();
 };
 
+const onDrop = (src, target) => {
+  removeGreySquares();
+
+  const move = game.move({
+    from: src,
+    to: target,
+    promotion: 'q',
+  });
+
+  if (move === null) return 'snapback';
+};
+
 const boardConfig = {
   position: 'start',
   pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
@@ -55,6 +68,7 @@ const boardConfig = {
   onDragStart,
   onMouseoverSquare,
   onMouseoutSquare,
+  onDrop,
 };
 
 const board = ChessBoard('board', boardConfig);
