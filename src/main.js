@@ -11,6 +11,7 @@ let board = null;
 const game = new Chess();
 const whiteSquareGrey = '#a9a9a9';
 const blackSquareGrey = '#696969';
+const aiSearchDepth = 3;
 let counter = 0;
 
 // AI
@@ -144,6 +145,9 @@ const evalBoard = (b) => {
 
 const minimax = (depth, gameToPass, alpha, beta, isMaximizingPlayer) => {
   counter++;
+  if (gameToPass.in_checkmate()) {
+    return gameToPass.turn() === 'w' ? -50000 : 50000;
+  }
   if (depth === 0) {
     return evalBoard(gameToPass.board());
   }
@@ -265,7 +269,7 @@ const onDrop = (src, target) => {
   });
 
   if (move === null) return 'snapback';
-  makeBestMove(3);
+  makeBestMove(aiSearchDepth);
 };
 
 const onSnapEnd = () => {
