@@ -14,31 +14,116 @@ const blackSquareGrey = '#696969';
 let counter = 0;
 
 // AI
+const wPawn = [
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [50, 50, 50, 50, 50, 50, 50, 50],
+  [10, 10, 20, 30, 30, 20, 10, 10],
+  [5, 5, 10, 25, 25, 10, 5, 5],
+  [0, 0, 0, 20, 20, 0, 0, 0],
+  [5, -5, -10, 0, 0, -10, -5, 5],
+  [5, 10, 10, -20, -20, 10, 10, 5],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+];
+
+const bPawn = wPawn.reverse();
+
+const wKnight = [
+  [-50, -40, -30, -30, -30, -30, -40, -50],
+  [-40, -20, 0, 0, 0, 0, -20, -40],
+  [-30, 0, 10, 15, 15, 10, 0, -30],
+  [-30, 5, 15, 20, 20, 15, 5, -30],
+  [-30, 0, 15, 20, 20, 15, 0, -30],
+  [-30, 5, 10, 15, 15, 10, 5, -30],
+  [-40, -20, 0, 5, 5, 0, -20, -40],
+  [-50, -40, -30, -30, -30, -30, -40, -50],
+];
+
+const bKnight = wKnight.reverse();
+
+const wBishop = [
+  [-20, -10, -10, -10, -10, -10, -10, -20],
+  [-10, 0, 0, 0, 0, 0, 0, -10],
+  [-10, 0, 5, 10, 10, 5, 0, -10],
+  [-10, 5, 5, 10, 10, 5, 5, -10],
+  [-10, 0, 10, 10, 10, 10, 0, -10],
+  [-10, 10, 10, 10, 10, 10, 10, -10],
+  [-10, 5, 0, 0, 0, 0, 5, -10],
+  [-20, -10, -10, -10, -10, -10, -10, -20],
+];
+
+const bBishop = wBishop.reverse();
+
+const wRook = [
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [5, 10, 10, 10, 10, 10, 10, 5],
+  [-5, 0, 0, 0, 0, 0, 0, -5],
+  [-5, 0, 0, 0, 0, 0, 0, -5],
+  [-5, 0, 0, 0, 0, 0, 0, -5],
+  [-5, 0, 0, 0, 0, 0, 0, -5],
+  [-5, 0, 0, 0, 0, 0, 0, -5],
+  [0, 0, 0, 5, 5, 0, 0, 0],
+];
+
+const bRook = wRook.reverse();
+
+const wQueen = [
+  [-20, -10, -10, -5, -5, -10, -10, -20],
+  [-10, 0, 0, 0, 0, 0, 0, -10],
+  [-10, 0, 5, 5, 5, 5, 0, -10],
+  [-5, 0, 5, 5, 5, 5, 0, -5],
+  [0, 0, 5, 5, 5, 5, 0, -5],
+  [-10, 5, 5, 5, 5, 5, 0, -10],
+  [-10, 0, 5, 0, 0, 0, 0, -10],
+  [-20, -10, -10, -5, -5, -10, -10, -20],
+];
+
+const bQueen = wQueen.reverse();
+
+const wKing = [
+  [-30, -40, -40, -50, -50, -40, -40, -30],
+  [-30, -40, -40, -50, -50, -40, -40, -30],
+  [-30, -40, -40, -50, -50, -40, -40, -30],
+  [-30, -40, -40, -50, -50, -40, -40, -30],
+  [-20, -30, -30, -40, -40, -30, -30, -20],
+  [-10, -20, -20, -20, -20, -20, -20, -10],
+  [20, 20, 0, 0, 0, 0, 20, 20],
+  [20, 30, 10, 0, 0, 10, 30, 20],
+];
+
+const bKing = wKing.reverse();
+
 const evalPos = (i, j, b) => {
   const p = b[i][j];
 
   if (p === null) return 0;
 
+  let posValue = 0;
   let pieceValue = 0;
 
   switch (p.type) {
     case 'p':
-      pieceValue = 100;
+      posValue = p.color === 'w' ? wPawn[i][j] : bPawn[i][j];
+      pieceValue = 100 + posValue;
       break;
     case 'r':
-      pieceValue = 500;
+      posValue = p.color === 'w' ? wRook[i][j] : bRook[i][j];
+      pieceValue = 500 + posValue;
       break;
     case 'n':
+      posValue = p.color === 'w' ? wKnight[i][j] : bKnight[i][j];
       pieceValue = 320;
       break;
     case 'b':
-      pieceValue = 330;
+      posValue = p.color === 'w' ? wBishop[i][j] : bBishop[i][j];
+      pieceValue = 330 + posValue;
       break;
     case 'q':
-      pieceValue = 900;
+      posValue = p.color === 'w' ? wQueen[i][j] : bQueen[i][j];
+      pieceValue = 900 + posValue;
       break;
     case 'k':
-      pieceValue = 20000;
+      posValue = p.color === 'w' ? wKing[i][j] : bKing[i][j];
+      pieceValue = 20000 + posValue;
       break;
     default:
       throw `Unknown piece type: ${p.type}`;
