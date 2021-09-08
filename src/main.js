@@ -14,7 +14,9 @@ const blackSquareGrey = '#696969';
 let counter = 0;
 
 // AI
-const evalPiece = (p) => {
+const evalPos = (i, j, b) => {
+  const p = b[i][j];
+
   if (p === null) return 0;
 
   let pieceValue = 0;
@@ -49,7 +51,7 @@ const evalBoard = (b) => {
   let score = 0;
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      score += evalPiece(b[i][j]);
+      score += evalPos(i, j, b);
     }
   }
   return score;
